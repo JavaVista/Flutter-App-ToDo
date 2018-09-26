@@ -26,13 +26,14 @@ class TodoListState extends State<TodoList> {
   List<String> _todoItems = [];
 
   // This will be called each time the + button is pressed
-  void _addTodoItem() {
+  // This will accept a string
+  void _addTodoItem(String task) {
     // Putting our code inside "setState" tells the app that our state has changed, and
     // it will automatically re-render the list
-    setState(() {
-      int index = _todoItems.length;
-      _todoItems.add('Honeydo ' + index.toString());
-    });
+    // Only add task if the user actually entered something
+    if (task.length > 0) {
+      setState(() => _todoItems.add(task));
+    }
   }
 
   // Build the whole list of todo items
@@ -60,14 +61,37 @@ class TodoListState extends State<TodoList> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('Todo Lista'),
+        title: new Text('ToDo Lista'),
       ),
       body: _buildTodoList(),
       floatingActionButton: new FloatingActionButton(
-        onPressed: _addTodoItem,
+        //By pressing button now opens new screen
+        onPressed: _pushAddTodoScreen,
         tooltip: 'Add todo',
         child: new Icon(Icons.add),
       ),
     );
+  }
+
+  void _pushAddTodoScreen() {
+    // Push this page onto the stack
+    Navigator.of(context).push(
+        //MaterialPageRoute will automatically animate the screen entry as well as
+        //adding a back button to close it
+        new MaterialPageRoute(builder: (context) {
+      return new Scaffold(
+          appBar: new AppBar(title: new Text('Add a new task')),
+          body: new TextField(
+            autofocus: true,
+            onSubmitted: (val) {
+              _addTodoItem(val);
+              // Close the add todo screen
+              Navigator.pop(context);
+            },
+            decoration: new InputDecoration(
+                hintText: 'Enter a Honeydo...',
+                contentPadding: const EdgeInsets.all(16.0)),
+          ));
+    }));
   }
 }
